@@ -130,20 +130,20 @@ function RocketGame() {
     function generateCrashPoint() {
         const random = Math.random();
     
-        if (random < 0.72) {
-            // 72% chance: Crash between 0.3x and 1.2x
-            return Math.random() * 0.9 + 0.1; // Range: 0.3 to 1.2
-        } else if (random < 0.87) {
-            // 15% chance: Crash between 0.1x and 4x
-            return Math.random() * 3.9 + 0.1;
-        } else if (random < 0.97) {
-            // 10% chance: Crash between 4.1x and 10x
-            return Math.random() * 5.9 + 4.1;
+        if (random < 0.85) {
+            // 85% chance: Crash between 0.1x and 0.4x
+            return Math.random() * 0.3 + 0.1; // Range: 0.1 to 0.4
+        } else if (random < 0.9) {
+            // 5% chance: Crash between 0.5x and 4x
+            return Math.random() * 3.5 + 0.5; // Range: 0.5 to 4x
+        } else if (random < 0.975) {
+            // 7.5% chance: Crash between 4.1x and 10x
+            return Math.random() * 5.9 + 4.1; // Range: 4.1 to 10x
         } else {
-            // 3% chance: Crash between 10.1x and 25x
-            return Math.random() * 14.9 + 10.1;
+            // 7.5% chance: Crash between 10.1x and 25x
+            return Math.random() * 14.9 + 10.1; // Range: 10.1 to 25x
         }
-    }
+        
     
     
     

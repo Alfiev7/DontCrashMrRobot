@@ -144,7 +144,7 @@ function RocketGame() {
             return Math.random() * 14.9 + 10.1;
         }
         
-    
+    }
     
     
 

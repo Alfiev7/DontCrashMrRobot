@@ -1,0 +1,108 @@
+.leaderboard {
+    background-color: #1A2C38;
+    border-radius: 8px;
+    padding: 16px;
+    width: 350px;
+}
+
+.leaderboard-title {
+    font-size: 24px;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 16px;
+    color: #FFD700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 
+        2px 2px 0 #000,
+        3px 3px 0 #000,
+        4px 4px 0 rgba(0, 0, 0, 0.3);
+    font-family: Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+.leaderboard-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.leaderboard-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.leaderboard-rank {
+    width: 24px;
+    color: #FFD700;
+    font-weight: 600;
+}
+
+.leaderboard-username {
+    flex: 1;
+    margin: 0 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 14px;
+    font-weight: 900;
+    margin-left: 30px;
+        color: #FFD700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 
+        2px 2px 0 #000,
+        3px 3px 0 #000,
+        4px 4px 0 rgba(0, 0, 0, 0.3);
+    font-family: Arial, sans-serif;
+}
+
+.leaderboard-balance {
+    color: #4CAF50;
+    font-weight: 600;
+    
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 
+        2px 2px 0 #000,
+        3px 3px 0 #000,
+        4px 4px 0 rgba(0, 0, 0, 0.3);
+    font-family: Arial, sans-serif;
+}
+
+@media (max-width: 1024px) {
+    .leaderboard {
+        width: 100%;
+    }
+
+    .leaderboard-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 12px;
+    }
+
+    .leaderboard-item {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        padding: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .leaderboard-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .leaderboard-title {
+        font-size: 20px;
+        text-shadow: 
+            1px 1px 0 #000,
+            2px 2px 0 #000,
+            3px 3px 0 rgba(0, 0, 0, 0.3);
+    }
+}
+

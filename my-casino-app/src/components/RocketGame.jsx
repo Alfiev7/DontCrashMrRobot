@@ -5,7 +5,7 @@ import "./RocketGame.css";
 import { updateUserBalance, getUserBalance } from "../utils/supabaseclient";
 import { useAuth } from "../utils/AuthContext";
 import { useBalance } from "../utils/BalanceContext";
-import Leaderboard from './Leaderboard';
+import Leaderboard from "./Leaderboard";
 
 function RocketGame() {
     const { user } = useAuth(); // Get current user from AuthContext
@@ -18,9 +18,18 @@ function RocketGame() {
     const [hasCrashed, setHasCrashed] = useState(false);
     const [notification, setNotification] = useState(null);
     const [showCashedOut, setShowCashedOut] = useState(null);
+    const [hasCashedOut, setHasCashedOut] = useState(false);
+
+    const [lastClaimTime, setLastClaimTime] = useState(
+        localStorage.getItem("lastClaimTime") || null
+    );
+    const [bonusCountdown, setBonusCountdown] = useState("");
 
     const intervalRef = useRef(null);
     const rocketAreaRef = useRef(null);
+
+    const FOUR_HOURS_MS = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
+    const BONUS_AMOUNT = 2000;
 
     const profit = currentBet * rocketMultiplier;
 
@@ -38,20 +47,62 @@ function RocketGame() {
         fetchBalance();
     }, [user, setCoinsBalance]);
 
+    // Calculate bonus countdown
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (lastClaimTime) {
+                const elapsedTime = Date.now() - parseInt(lastClaimTime, 10);
+                if (elapsedTime >= FOUR_HOURS_MS) {
+                    setBonusCountdown("Ready to claim!");
+                } else {
+                    const remainingTime = FOUR_HOURS_MS - elapsedTime;
+                    const hours = Math.floor(remainingTime / (1000 * 60 * 60));
+                    const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+                    setBonusCountdown(`${hours}h ${minutes}m ${seconds}s`);
+                }
+            } else {
+                setBonusCountdown("Ready to claim!");
+            }
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [lastClaimTime]);
+
+    // Claim Bonus
+    const handleClaimBonus = async () => {
+        if (bonusCountdown !== "Ready to claim!") return;
+
+        const newBalance = coinsBalance + BONUS_AMOUNT;
+        const { success, error } = await updateUserBalance(user.id, newBalance);
+        if (success) {
+            setCoinsBalance(newBalance);
+            localStorage.setItem("lastClaimTime", Date.now().toString());
+            setLastClaimTime(Date.now().toString());
+            setNotification({ message: `You claimed ${BONUS_AMOUNT} coins!`, type: "success" });
+        } else {
+            console.error("Error updating balance:", error.message);
+            setNotification({ message: "Error claiming bonus", type: "error" });
+        }
+    };
+
     function betAmountChange(e) {
         const value = e.target.value;
-        // Only allow numeric input and update state
         if (!isNaN(value) && value !== "") {
             setBetAmount(Number(value));
         } else {
-            setBetAmount(0); // Reset to 0 if the input is cleared
+            setBetAmount(0);
         }
     }
-
 
     async function placeBet() {
         if (betAmount <= 0 || betAmount > coinsBalance) {
             setNotification({ message: "Invalid Bet Amount", type: "error" });
+            return;
+        }
+
+        if (betAmount > 20000) {
+            setNotification({ message: "Maximum bet amount is 20,000 coins.", type: "error" });
             return;
         }
 
@@ -65,6 +116,7 @@ function RocketGame() {
             setRocketMultiplier(0);
             setTrailPoints([{ x: 0, y: 500 }]);
             setHasCrashed(false);
+            setHasCashedOut(false);
             rocketStart();
         } else {
             console.error("Error updating balance:", error.message);
@@ -74,7 +126,7 @@ function RocketGame() {
 
     async function cashOutBet() {
         if (currentBet > 0) {
-            const winnings = Math.round((currentBet * rocketMultiplier + currentBet) * 100) / 100; // Include the bet
+            const winnings = Math.round((currentBet * rocketMultiplier + currentBet) * 100) / 100;
             const newBalance = coinsBalance + winnings;
 
             const { success, error } = await updateUserBalance(user.id, newBalance);
@@ -85,15 +137,11 @@ function RocketGame() {
                     type: "success",
                 });
 
-                // Show cashed-out effect
                 setShowCashedOut(`+${winnings.toLocaleString()} coins`);
-                setTimeout(() => setShowCashedOut(null), 3000); // Hide after 3 seconds
+                setTimeout(() => setShowCashedOut(null), 3000);
 
-                clearInterval(intervalRef.current);
-                setRocketMultiplier(0);
+                setHasCashedOut(true);
                 setCurrentBet(0);
-                setRocketFlying(false);
-                setTrailPoints([]);
             } else {
                 console.error("Error updating balance:", error.message);
                 setNotification({ message: "Error cashing out", type: "error" });
@@ -129,24 +177,19 @@ function RocketGame() {
 
     function generateCrashPoint() {
         const random = Math.random();
-    
-        if (random < 0.85) {
-            // 85% chance: Crash between 0.1x and 0.4x
-            return Math.random() * 0.3 + 0.1; // Range: 0.1 to 0.4
-        } else if (random < 0.9) {
-            // 5% chance: Crash between 0.5x and 4x
-            return Math.random() * 3.5 + 0.5; // Range: 0.5 to 4x
-        } else if (random < 0.975) {
-            // 7.5% chance: Crash between 4.1x and 10x
-            return Math.random() * 5.9 + 4.1; // Range: 4.1 to 10x
+
+        if (random < 0.05) {
+            return Math.random() * 0.05 + 0.1;
+        } else if (random < 0.25) {
+            return Math.random() * 0.15 + 0.15;
+        } else if (random < 0.55) {
+            return Math.random() * 0.9 + 0.3;
+        } else if (random < 0.85) {
+            return Math.random() * 5.2 + 1.3;
         } else {
-            // 7.5% chance: Crash between 10.1x and 25x
-            return Math.random() * 14.9 + 10.1; // Range: 10.1 to 25x
+            return Math.random() * 15.4 + 6.6;
         }
-        
     }
-    
-    
 
     const rocketPosition = {
         top: `${95 - Math.max(1, Math.min(rocketMultiplier * 4, 95))}%`,
@@ -178,7 +221,21 @@ function RocketGame() {
         return (
             <div className="rocket-game-container">
                 <div className="game-wrapper">
-                    <Leaderboard />
+                    <div className="left-panel">
+                        <Leaderboard />
+                        <div className="bonus-box">
+                            <h3>4-Hour Bonus</h3>
+                            <p>{bonusCountdown}</p>
+                            <button
+                                onClick={handleClaimBonus}
+                                disabled={bonusCountdown !== "Ready to claim!"}
+                                className="btn btn-bonus"
+                            >
+                                Claim 2,000 Coins
+                            </button>
+                        </div>
+                    </div>
+        
                     <div className="rocket-game">
                         <div className="game-container">
                             <div className="rocket-area" ref={rocketAreaRef}>
@@ -200,9 +257,15 @@ function RocketGame() {
                                         {rocketMultiplier.toFixed(2)}x
                                     </span>
                                 </div>
-                                {currentBet > 0 && (
+                                {currentBet > 0 && !hasCashedOut && (
                                     <div className={`potential-win ${hasCrashed ? "crashed" : ""}`}>
                                         Potential Win: {profit.toFixed(2)} coins
+                                    </div>
+                                )}
+        
+                                {hasCashedOut && (
+                                    <div className={`potential-win ${hasCrashed ? "crashed" : ""}`}>
+                                        You are cashed out on this round
                                     </div>
                                 )}
                             </div>
@@ -245,6 +308,7 @@ function RocketGame() {
                 </div>
             </div>
         );
-    }
-    
-    export default RocketGame;
+        
+}
+
+export default RocketGame;

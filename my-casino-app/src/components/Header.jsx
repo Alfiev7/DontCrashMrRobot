@@ -19,37 +19,27 @@ function Header({ coinsBalance }) {
         }
     };
 
+    // Conditionally render content based on `user`
+    if (!user) {
+        return null; // Render nothing if no user is logged in
+    }
+
     return (
         <header className="header">
             <div className="header-content">
-            <div className="header-balance">
-            <FaCoins className="coin-icon" />
-                        <span className="balance-amount">
-                            {coinsBalance.toLocaleString()}
-                        </span>
-                        </div>
+                <div className="header-balance">
+                    <FaCoins className="coin-icon" />
+                    <span className="balance-amount">{coinsBalance.toLocaleString()}</span>
+                </div>
                 <div className="header-right">
-                 
-
-                        <Link to="/" className="logo-link">
-                    <h1 className="header-title">DON'T CRASH MR ROCKET</h1>
-                </Link>
-                    
+                    <Link to="/" className="logo-link">
+                        <h1 className="header-title">DON'T CRASH MR ROCKET</h1>
+                    </Link>
                     <nav className="header-nav">
-                        {!user ? (
-                            <>
-                                <Link to="/login" className="nav-item login-button">Login</Link>
-                                <Link to="/register" className="nav-item register-button">Register</Link>
-                            </>
-                        ) : (
-                            <>
-                                <button onClick={handleSignOut} className="nav-item signout-button">
-                                    Sign Out <FaSignOutAlt />
-                                </button>
-                            </>
-                        )}
+                        <button onClick={handleSignOut} className="nav-item signout-button">
+                            Sign Out <FaSignOutAlt />
+                        </button>
                     </nav>
-                    
                 </div>
             </div>
         </header>
@@ -57,4 +47,3 @@ function Header({ coinsBalance }) {
 }
 
 export default Header;
-

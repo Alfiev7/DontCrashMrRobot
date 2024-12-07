@@ -21,6 +21,17 @@
     font-size: 24px;
     margin-bottom: 20px;
     text-align: center;
+    color: #FFD700;
+    margin: 0 auto;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-shadow: 
+      2px 2px 0 #000,
+      3px 3px 0 #000,
+      4px 4px 0 rgba(0, 0, 0, 0.3);
+    font-family: Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: 30px;
 }
 
 .register-form {

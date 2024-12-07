@@ -29,7 +29,7 @@ function Leaderboard() {
     }, []);
 
     const getMedalColor = (index) => {
-        switch(index) {
+        switch (index) {
             case 0: return 'gold';
             case 1: return 'silver';
             case 2: return '#CD7F32'; // bronze
@@ -55,8 +55,9 @@ function Leaderboard() {
                             </span>
                             <span className="leaderboard-username">{leader.username}</span>
                             <span className="leaderboard-balance">
-                                {leader.coin_balance.toLocaleString()} 
+                                {Math.round(leader.coin_balance).toLocaleString()}
                             </span>
+
                         </li>
                     ))}
                 </ul>

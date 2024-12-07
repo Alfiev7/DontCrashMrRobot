@@ -101,11 +101,6 @@ function RocketGame() {
             return;
         }
 
-        if (betAmount > 20000) {
-            setNotification({ message: "Maximum bet amount is 20,000 coins.", type: "error" });
-            return;
-        }
-
         const newBalance = coinsBalance - betAmount;
 
         const { success, error } = await updateUserBalance(user.id, newBalance);
@@ -177,19 +172,28 @@ function RocketGame() {
 
     function generateCrashPoint() {
         const random = Math.random();
-
+    
         if (random < 0.05) {
-            return Math.random() * 0.05 + 0.1;
+            // 5% chance: Crash between 0.1x and 0.15x
+            return Math.random() * 0.05 + 0.1; // Range: 0.1 to 0.15
         } else if (random < 0.25) {
-            return Math.random() * 0.15 + 0.15;
+            // 20% chance: Crash between 0.15x and 0.3x
+            return Math.random() * 0.15 + 0.15; // Range: 0.15 to 0.3
         } else if (random < 0.55) {
-            return Math.random() * 0.9 + 0.3;
+            // 30% chance: Crash between 0.3x and 1.2x
+            return Math.random() * 0.9 + 0.3; // Range: 0.3 to 1.2
         } else if (random < 0.85) {
-            return Math.random() * 5.2 + 1.3;
+            // 30% chance: Crash between 1.3x and 3x
+            return Math.random() * 1.7 + 1.3; // Range: 1.3 to 3
+        } else if (random < 0.95) {
+            // 10% chance: Crash between 3.1x and 6.5x
+            return Math.random() * 3.4 + 3.1; // Range: 3.1 to 6.5
         } else {
-            return Math.random() * 15.4 + 6.6;
+            // 5% chance: Crash between 6.6x and 22x
+            return Math.random() * 15.4 + 6.6; // Range: 6.6 to 22
         }
     }
+    
 
     const rocketPosition = {
         top: `${95 - Math.max(1, Math.min(rocketMultiplier * 4, 95))}%`,
